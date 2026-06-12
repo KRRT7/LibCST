@@ -11,9 +11,6 @@ from libcst._nodes.tests.base import CSTNodeTest, DummyIndentedBlock
 from libcst.metadata import CodeRange
 from libcst.testing.utils import data_provider
 
-native_parse_statement: Callable[[str], cst.CSTNode] = parse_statement
-
-
 class TryTest(CSTNodeTest):
     @data_provider(
         (
@@ -466,7 +463,7 @@ class TryStarTest(CSTNodeTest):
                     ),
                 ),
                 "code": "try: pass\nexcept* Exception: pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
             },
             # Try/except with a named class
             {
@@ -481,7 +478,7 @@ class TryStarTest(CSTNodeTest):
                     ),
                 ),
                 "code": "try: pass\nexcept* Exception as exc: pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
                 "expected_position": CodeRange((1, 0), (2, 30)),
             },
             # Try/except with multiple clauses
@@ -504,7 +501,7 @@ class TryStarTest(CSTNodeTest):
                 "code": "try: pass\n"
                 + "except* TypeError as e: pass\n"
                 + "except* KeyError as e: pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
                 "expected_position": CodeRange((1, 0), (3, 27)),
             },
             # Simple try/except/finally block
@@ -521,7 +518,7 @@ class TryStarTest(CSTNodeTest):
                     finalbody=cst.Finally(cst.SimpleStatementSuite((cst.Pass(),))),
                 ),
                 "code": "try: pass\nexcept* KeyError: pass\nfinally: pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
                 "expected_position": CodeRange((1, 0), (3, 13)),
             },
             # Simple try/except/else block
@@ -538,7 +535,7 @@ class TryStarTest(CSTNodeTest):
                     orelse=cst.Else(cst.SimpleStatementSuite((cst.Pass(),))),
                 ),
                 "code": "try: pass\nexcept* KeyError: pass\nelse: pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
                 "expected_position": CodeRange((1, 0), (3, 10)),
             },
             # Verify whitespace in various locations
@@ -574,7 +571,7 @@ class TryStarTest(CSTNodeTest):
                     whitespace_before_colon=cst.SimpleWhitespace(" "),
                 ),
                 "code": "# 1\ntry : pass\n# 2\nexcept  *TypeError  as  e : pass\n# 3\nelse : pass\n# 4\nfinally : pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
                 "expected_position": CodeRange((2, 0), (8, 14)),
             },
             # Now all together
@@ -601,7 +598,7 @@ class TryStarTest(CSTNodeTest):
                 + "except* KeyError as e: pass\n"
                 + "else: pass\n"
                 + "finally: pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
                 "expected_position": CodeRange((1, 0), (5, 13)),
             },
             # PEP758 - Multiple exceptions with no parentheses
@@ -634,7 +631,7 @@ class TryStarTest(CSTNodeTest):
                     ],
                 ),
                 "code": "try: pass\nexcept* ValueError, RuntimeError: pass\n",
-                "parser": native_parse_statement,
+                "parser": parse_statement,
             },
         )
     )

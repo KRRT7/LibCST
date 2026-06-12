@@ -1,6 +1,0 @@
-[workspace]
-
-members = [
-    "libcst",
-    "libcst_derive",
-]

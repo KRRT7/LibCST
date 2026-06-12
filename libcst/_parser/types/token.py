@@ -4,9 +4,4 @@
 # LICENSE file in the root directory of this source tree.
 
 
-try:
-    from libcst_native import tokenize
-
-    Token = tokenize.Token
-except ImportError:
-    from libcst._parser.types.py_token import Token  # noqa: F401
+from libcst._parser.types.py_token import Token  # noqa: F401

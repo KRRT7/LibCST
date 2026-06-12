@@ -16,14 +16,9 @@ from libcst._parser.parso.utils import parse_version_string, PythonVersionInfo
 
 _INDENT_RE: Pattern[str] = re.compile(r"[ \t]+")
 
-try:
-    from libcst_native import parser_config as config_mod
+from libcst._parser.types import py_config as config_mod
 
-    MockWhitespaceParserConfig = config_mod.BaseWhitespaceParserConfig
-except ImportError:
-    from libcst._parser.types import py_config as config_mod
-
-    MockWhitespaceParserConfig = config_mod.MockWhitespaceParserConfig
+MockWhitespaceParserConfig = config_mod.MockWhitespaceParserConfig
 
 BaseWhitespaceParserConfig = config_mod.BaseWhitespaceParserConfig
 ParserConfig = config_mod.ParserConfig

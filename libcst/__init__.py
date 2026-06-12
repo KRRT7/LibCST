@@ -221,10 +221,7 @@ from libcst._parser.types.config import (
 from libcst._removal_sentinel import RemovalSentinel, RemoveFromParent
 from libcst._visitors import CSTNodeT, CSTTransformer, CSTVisitor, CSTVisitorT
 
-try:
-    from libcst._version import version as LIBCST_VERSION
-except ImportError:
-    LIBCST_VERSION = "unknown"
+LIBCST_VERSION = "0.0.1"
 from libcst.helpers import (  # from libcst import ensure_type is deprecated, will be removed in 0.4.0
     ensure_type,
 )

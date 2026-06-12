@@ -84,7 +84,6 @@ class ModuleTest(CSTNodeTest):
             "empty_program_with_newline": {
                 "code": "\n",
                 "expected": cst.Module([], has_trailing_newline=True),
-                "enabled_for_native": False,
             },
             "empty_program_with_comments": {
                 "code": "# some comment\n",
@@ -115,10 +114,8 @@ class ModuleTest(CSTNodeTest):
         }
     )
     def test_parser(
-        self, *, code: str, expected: cst.Module, enabled_for_native: bool = True
+        self, *, code: str, expected: cst.Module
     ) -> None:
-        if not enabled_for_native:
-            self.skipTest("Disabled for native parser")
         self.assertEqual(parse_module(code), expected)
 
     @data_provider(

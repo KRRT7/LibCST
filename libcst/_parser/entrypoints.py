@@ -9,14 +9,15 @@ parser. A parser entrypoint should take the source code and some configuration
 information
 """
 
-from functools import partial
 from typing import Union
 
 from libcst._nodes.base import CSTNode
 from libcst._nodes.expression import BaseExpression
 from libcst._nodes.module import Module
 from libcst._nodes.statement import BaseCompoundStatement, SimpleStatementLine
-from libcst._parser.detect_config import convert_to_utf8
+from libcst._parser.detect_config import detect_config
+from libcst._parser.grammar import get_grammar
+from libcst._parser.python_parser import PythonCSTParser
 from libcst._parser.types.config import PartialParserConfig
 
 _DEFAULT_PARTIAL_PARSER_CONFIG: PartialParserConfig = PartialParserConfig()
@@ -26,25 +27,22 @@ def _parse(
     entrypoint: str,
     source: Union[str, bytes],
     config: PartialParserConfig,
-    *,
-    detect_trailing_newline: bool,
-    detect_default_newline: bool,
 ) -> CSTNode:
-
-    encoding, source_str = convert_to_utf8(source, partial=config)
-
-    from libcst import native
-
-    if entrypoint == "file_input":
-        parse = partial(native.parse_module, encoding=encoding)
-    elif entrypoint == "stmt_input":
-        parse = native.parse_statement
-    elif entrypoint == "expression_input":
-        parse = native.parse_expression
-    else:
-        raise ValueError(f"Unknown parser entry point: {entrypoint}")
-
-    return parse(source_str)
+    detected_config = detect_config(
+        source,
+        partial=config,
+        detect_trailing_newline=entrypoint != "expression_input",
+        detect_default_newline=entrypoint == "file_input",
+    )
+    parser = PythonCSTParser(
+        tokens=detected_config.tokens,
+        config=detected_config.config,
+        pgen_grammar=get_grammar(
+            detected_config.config.version, detected_config.config.future_imports
+        ),
+        start_nonterminal=entrypoint,
+    )
+    return parser.parse()
 
 
 def parse_module(
@@ -66,8 +64,6 @@ def parse_module(
         "file_input",
         source,
         config,
-        detect_trailing_newline=True,
-        detect_default_newline=True,
     )
     assert isinstance(result, Module)
     return result
@@ -95,8 +91,6 @@ def parse_statement(
         "stmt_input",
         source,
         config,
-        detect_trailing_newline=True,
-        detect_default_newline=False,
     )
     assert isinstance(result, (SimpleStatementLine, BaseCompoundStatement))
     return result
@@ -117,8 +111,6 @@ def parse_expression(
         "expression_input",
         source,
         config,
-        detect_trailing_newline=False,
-        detect_default_newline=False,
     )
     assert isinstance(result, BaseExpression)
     return result

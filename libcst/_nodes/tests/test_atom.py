@@ -1183,8 +1183,6 @@ class AtomTest(CSTNodeTest):
         )
     )
     def test_versions(self, **kwargs: Any) -> None:
-        if not kwargs.get("expect_success", True):
-            self.skipTest("parse errors are disabled for native parser")
         self.assert_parses(**kwargs)
 
 
